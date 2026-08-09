@@ -1,6 +1,6 @@
 package com.diego.Clasificador_gastos.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,10 +32,7 @@ public class CategorizacionService {
                 .build();
     }
 
-    /**
-     * Clasifica la descripción de un gasto en una de las categorías predefinidas,
-     * usando el modelo de Groq. Si algo falla, devuelve "Otros" en vez de tumbar la creación del gasto.
-     */
+    
     public String clasificar(String descripcion) {
         try {
             String systemPrompt = "Eres un clasificador de gastos personales. "
@@ -65,8 +62,7 @@ public class CategorizacionService {
                     .asText()
                     .trim();
 
-            // Validamos que la respuesta sea EXACTAMENTE una de nuestras categorías conocidas.
-            // Un LLM a veces agrega texto extra pese a las instrucciones — mejor prevenir.
+          
             return CATEGORIAS.stream()
                     .filter(cat -> cat.equalsIgnoreCase(categoriaCruda))
                     .findFirst()
