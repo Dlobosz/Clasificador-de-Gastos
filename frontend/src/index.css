@@ -10,25 +10,14 @@
   --error: #d64545;
 
   font: 16px/150% system-ui, 'Segoe UI', Roboto, sans-serif;
-  color-scheme: light dark;
+  /* Fondo blanco fijo a propósito: el proyecto no ofrece modo oscuro,
+     así que forzamos "light" para que no dependa de la preferencia del
+     sistema operativo del usuario. */
+  color-scheme: light;
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #c7c5cc;
-    --text-suave: #8b8890;
-    --text-h: #f3f2f5;
-    --bg: #131217;
-    --bg-superficie: #1b1a20;
-    --border: #2c2a33;
-    --acento: #a29bfe;
-    --acento-bg: rgba(162, 155, 254, 0.15);
-    --error: #ff6b6b;
-  }
 }
 
 * {

@@ -94,7 +94,7 @@ export default function EditarGastoModal({ gasto, categorias, onClose, onGuardad
               onChange={(e) => actualizarCampo('esRecurrente', e.target.checked)}
               disabled={guardando}
             />
-            Es un gasto recurrente
+            Es un Gasto Recurrente (Ej: Stream, IA, Cuentas, etc.)
           </label>
 
           {error && <p className="error">{error}</p>}

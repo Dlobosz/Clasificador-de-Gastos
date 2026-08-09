@@ -93,7 +93,7 @@ export default function GastoForm({ onGastoCreado }) {
           onChange={(e) => actualizarCampo('esRecurrente', e.target.checked)}
           disabled={enviando}
         />
-        Es un gasto recurrente
+        Es un Gasto Recurrente (Ej: Stream, IA, Cuentas, etc.)
       </label>
 
       <button type="submit" className="btn-primario" disabled={enviando}>
