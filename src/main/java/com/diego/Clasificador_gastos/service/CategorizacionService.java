@@ -21,15 +21,10 @@ public class CategorizacionService {
     private final String model;
 
     public CategorizacionService(
-            @Value("${groq.api.url}") String url,
-            @Value("${groq.api.model}") String model,
-            @Value("${groq.api.key}") String apiKey) {
+            WebClient groqWebClient,
+            @Value("${groq.api.model}") String model) {
+        this.webClient = groqWebClient;
         this.model = model;
-        this.webClient = WebClient.builder()
-                .baseUrl(url)
-                .defaultHeader("Authorization", "Bearer " + apiKey)
-                .defaultHeader("Content-Type", "application/json")
-                .build();
     }
 
     
