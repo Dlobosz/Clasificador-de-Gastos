@@ -16,4 +16,8 @@ public class GastoRequestDTO {
     private Double monto;
 
     private LocalDate fecha;
+
+    // Opcional: si no se manda, se guarda como false. La categoria NO va
+    // aca porque siempre la asigna CategorizacionService (Groq) al crear.
+    private Boolean esRecurrente;
 }

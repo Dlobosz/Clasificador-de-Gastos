@@ -1,7 +1,7 @@
 import CategoriaBadge from './CategoriaBadge'
 import { formatoMonto } from '../utils/categorias'
 
-export default function GastoList({ gastos, cargando, error }) {
+export default function GastoList({ gastos, cargando, error, onEditar, mensajeVacio }) {
   if (cargando) {
     return <p className="estado-vacio">Cargando gastos…</p>
   }
@@ -11,7 +11,7 @@ export default function GastoList({ gastos, cargando, error }) {
   }
 
   if (gastos.length === 0) {
-    return <p className="estado-vacio">Todavía no hay gastos registrados.</p>
+    return <p className="estado-vacio">{mensajeVacio || 'Todavía no hay gastos registrados.'}</p>
   }
 
   // Los mas recientes primero.
@@ -29,9 +29,16 @@ export default function GastoList({ gastos, cargando, error }) {
       </thead>
       <tbody>
         {ordenados.map((gasto) => (
-          <tr key={gasto.id}>
+          <tr key={gasto.id} className="fila-clickeable" onClick={() => onEditar(gasto)}>
             <td>{gasto.fecha}</td>
-            <td>{gasto.descripcion}</td>
+            <td>
+              {gasto.descripcion}
+              {gasto.esRecurrente && (
+                <span className="icono-recurrente" title="Gasto recurrente">
+                  ↻
+                </span>
+              )}
+            </td>
             <td>
               <CategoriaBadge categoria={gasto.categoria} />
             </td>

@@ -2,8 +2,10 @@
 package com.diego.Clasificador_gastos.controller;
 
 import com.diego.Clasificador_gastos.dto.GastoRequestDTO;
+import com.diego.Clasificador_gastos.dto.GastoUpdateDTO;
 import com.diego.Clasificador_gastos.dto.ResumenMensualDTO;
 import com.diego.Clasificador_gastos.model.Gasto;
+import com.diego.Clasificador_gastos.service.CategoriasFijas;
 import com.diego.Clasificador_gastos.service.GastoService;
 import com.diego.Clasificador_gastos.service.ResumenService;
 import jakarta.validation.Valid;
@@ -33,6 +35,17 @@ public class GastoController {
     @GetMapping
     public ResponseEntity<List<Gasto>> listar() {
         return ResponseEntity.ok(service.listarTodos());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Gasto> actualizar(
+            @PathVariable Long id, @Valid @RequestBody GastoUpdateDTO dto) {
+        return ResponseEntity.ok(service.actualizarGasto(id, dto));
+    }
+
+    @GetMapping("/categorias")
+    public ResponseEntity<List<String>> categorias() {
+        return ResponseEntity.ok(CategoriasFijas.TODAS);
     }
 
     @GetMapping("/resumen")

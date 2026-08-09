@@ -27,16 +27,30 @@ export async function listarGastos() {
   return manejarRespuesta(res)
 }
 
-export async function crearGasto({ descripcion, monto, fecha }) {
+export async function crearGasto({ descripcion, monto, fecha, esRecurrente }) {
   const res = await fetch(BASE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ descripcion, monto, fecha: fecha || null }),
+    body: JSON.stringify({ descripcion, monto, fecha: fecha || null, esRecurrente }),
+  })
+  return manejarRespuesta(res)
+}
+
+export async function actualizarGasto(id, { monto, categoria, fecha, esRecurrente }) {
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ monto, categoria, fecha, esRecurrente }),
   })
   return manejarRespuesta(res)
 }
 
 export async function obtenerResumenMensual(mes) {
   const res = await fetch(`${BASE_URL}/resumen?mes=${encodeURIComponent(mes)}`)
+  return manejarRespuesta(res)
+}
+
+export async function obtenerCategorias() {
+  const res = await fetch(`${BASE_URL}/categorias`)
   return manejarRespuesta(res)
 }

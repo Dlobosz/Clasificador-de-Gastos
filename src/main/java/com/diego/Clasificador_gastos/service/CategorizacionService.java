@@ -13,10 +13,6 @@ import java.util.Map;
 @Slf4j
 public class CategorizacionService {
 
-    private static final List<String> CATEGORIAS = List.of(
-            "Comida", "Transporte", "Servicios", "Ocio", "Salud", "Compras", "Otros"
-    );
-
     private final WebClient webClient;
     private final String model;
 
@@ -32,7 +28,7 @@ public class CategorizacionService {
         try {
             String systemPrompt = "Eres un clasificador de gastos personales. "
                     + "Responde ÚNICAMENTE con una palabra, exactamente una de estas categorías: "
-                    + String.join(", ", CATEGORIAS) + ". "
+                    + String.join(", ", CategoriasFijas.TODAS) + ". "
                     + "No agregues explicación, puntuación ni texto adicional.";
 
             Map<String, Object> body = Map.of(
@@ -58,7 +54,7 @@ public class CategorizacionService {
                     .trim();
 
           
-            return CATEGORIAS.stream()
+            return CategoriasFijas.TODAS.stream()
                     .filter(cat -> cat.equalsIgnoreCase(categoriaCruda))
                     .findFirst()
                     .orElse("Otros");

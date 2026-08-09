@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { crearGasto } from '../api/gastos'
 
-const ESTADO_INICIAL = { descripcion: '', monto: '', fecha: '' }
+const ESTADO_INICIAL = { descripcion: '', monto: '', fecha: '', esRecurrente: false }
 
 export default function GastoForm({ onGastoCreado }) {
   const [form, setForm] = useState(ESTADO_INICIAL)
@@ -35,6 +35,7 @@ export default function GastoForm({ onGastoCreado }) {
         descripcion: form.descripcion.trim(),
         monto: montoNum,
         fecha: form.fecha || null,
+        esRecurrente: form.esRecurrente,
       })
       setForm(ESTADO_INICIAL)
       onGastoCreado(gastoCreado)
@@ -84,6 +85,16 @@ export default function GastoForm({ onGastoCreado }) {
         />
         <span className="hint">Opcional, hoy por defecto</span>
       </div>
+
+      <label className="campo-checkbox">
+        <input
+          type="checkbox"
+          checked={form.esRecurrente}
+          onChange={(e) => actualizarCampo('esRecurrente', e.target.checked)}
+          disabled={enviando}
+        />
+        Es un gasto recurrente
+      </label>
 
       <button type="submit" className="btn-primario" disabled={enviando}>
         {enviando ? 'Clasificando…' : 'Agregar gasto'}
