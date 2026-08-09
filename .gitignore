@@ -33,3 +33,10 @@ build/
 .vscode/
 .vscode/
 .env
+
+### Frontend (Vite + React) ###
+frontend/node_modules/
+frontend/dist/
+# El build de produccion SI se commitea: Vite lo genera directo en
+# src/main/resources/static, para que "mvn spring-boot:run" sirva la
+# app completa sin necesitar un paso extra de "npm run build".
