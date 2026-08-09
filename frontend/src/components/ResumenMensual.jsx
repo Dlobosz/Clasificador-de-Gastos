@@ -1,13 +1,9 @@
 import { useEffect, useState } from 'react'
 import { obtenerResumenMensual } from '../api/gastos'
-import CategoriaBadge from './CategoriaBadge'
-import { formatoMonto, colorCategoria } from '../utils/categorias'
-
-function mesActual() {
-  const hoy = new Date()
-  const mm = String(hoy.getMonth() + 1).padStart(2, '0')
-  return `${hoy.getFullYear()}-${mm}`
-}
+import { formatoMonto } from '../utils/categorias'
+import { mesActual } from '../utils/fechas'
+import PresupuestoBox from './PresupuestoBox'
+import GraficoCategorias from './GraficoCategorias'
 
 export default function ResumenMensual() {
   const [mes, setMes] = useState(mesActual())
@@ -36,11 +32,6 @@ export default function ResumenMensual() {
     }
   }, [mes])
 
-  const categorias = resumen?.totalPorCategoria
-    ? Object.entries(resumen.totalPorCategoria).sort((a, b) => b[1] - a[1])
-    : []
-  const maximo = categorias.length ? categorias[0][1] : 0
-
   return (
     <section className="resumen">
       <div className="selector-mes">
@@ -52,6 +43,8 @@ export default function ResumenMensual() {
           onChange={(e) => setMes(e.target.value)}
         />
       </div>
+
+      <PresupuestoBox mes={mes} gastadoDelMes={resumen?.totalGastado ?? 0} />
 
       {cargando && <p className="estado-vacio">Cargando resumen…</p>}
       {error && <p className="error">No se pudo cargar el resumen. {error}</p>}
@@ -69,32 +62,26 @@ export default function ResumenMensual() {
             </div>
           </div>
 
-          {categorias.length > 0 && (
-            <div className="desglose">
-              {categorias.map(([categoria, total]) => (
-                <div className="desglose-fila" key={categoria}>
-                  <CategoriaBadge categoria={categoria} />
-                  <div className="barra-fondo">
-                    <div
-                      className="barra-relleno"
-                      style={{
-                        width: `${(total / maximo) * 100}%`,
-                        background: colorCategoria(categoria),
-                      }}
-                    />
-                  </div>
-                  <span className="desglose-monto">{formatoMonto.format(total)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {resumen.resumenTexto && (
-            <p className="resumen-texto">{resumen.resumenTexto}</p>
-          )}
-
-          {resumen.cantidadGastos === 0 && (
+          {resumen.cantidadGastos === 0 ? (
             <p className="estado-vacio">No hay gastos registrados para este mes.</p>
+          ) : (
+            <>
+              <div className="recuadro">
+                <h3>Gastos por categoría</h3>
+                <GraficoCategorias
+                  totalPorCategoria={resumen.totalPorCategoria}
+                  totalGastado={resumen.totalGastado}
+                  presupuesto={resumen.presupuesto}
+                />
+              </div>
+
+              {resumen.consejosAhorro && (
+                <div className="recuadro">
+                  <h3>Consejos de ahorro</h3>
+                  <p className="consejos-texto">{resumen.consejosAhorro}</p>
+                </div>
+              )}
+            </>
           )}
         </>
       )}

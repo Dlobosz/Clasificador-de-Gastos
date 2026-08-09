@@ -4,7 +4,9 @@ import GastoList from './components/GastoList'
 import EditarGastoModal from './components/EditarGastoModal'
 import TipoDeGastos from './components/TipoDeGastos'
 import ResumenMensual from './components/ResumenMensual'
+import PresupuestoBox from './components/PresupuestoBox'
 import { listarGastos, obtenerCategorias } from './api/gastos'
+import { mesActual } from './utils/fechas'
 import './App.css'
 
 const TABS = [
@@ -53,6 +55,11 @@ function App() {
 
   const gastosRecurrentes = gastos.filter((g) => g.esRecurrente)
 
+  const mesDeHoy = mesActual()
+  const gastadoEsteMes = gastos
+    .filter((g) => g.fecha.startsWith(mesDeHoy))
+    .reduce((suma, g) => suma + g.monto, 0)
+
   return (
     <div className="app">
       <header className="app-header">
@@ -73,6 +80,7 @@ function App() {
       <main className="app-main">
         {vista === 'gastos' && (
           <>
+            <PresupuestoBox mes={mesDeHoy} gastadoDelMes={gastadoEsteMes} />
             <GastoForm onGastoCreado={handleGastoCreado} />
             <GastoList
               gastos={gastos}
