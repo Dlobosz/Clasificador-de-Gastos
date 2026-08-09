@@ -25,10 +25,13 @@ pequeño y funcional para portafolio, no una arquitectura compleja.
 com.diego.Clasificador_gastos/
 ├── model/Gasto.java              — entidad JPA (id, descripcion, monto, fecha, categoria)
 ├── dto/GastoRequestDTO.java       — DTO de entrada para crear un gasto
-├── repository/GastoRepository.java
+├── dto/ResumenMensualDTO.java     — DTO de salida del resumen mensual
+├── repository/GastoRepository.java — incluye findByFechaBetween(inicio, fin)
+├── config/GroqConfig.java         — bean compartido del WebClient de Groq (URL + API key)
 ├── service/GastoService.java      — orquesta creación de gastos, llama a CategorizacionService
 ├── service/CategorizacionService.java — llama a Groq para clasificar la descripción en una categoría fija
-└── controller/GastoController.java — expone POST y GET en /api/v1/gastos
+├── service/ResumenService.java    — agrega gastos del mes por categoría y le pide a Groq un resumen en texto
+└── controller/GastoController.java — expone POST/GET /api/v1/gastos y GET /api/v1/gastos/resumen
 ```
 
 ## Estado actual (qué YA funciona, probado)
@@ -53,17 +56,38 @@ com.diego.Clasificador_gastos/
   Se agregó `spring-boot-starter-json` al `pom.xml` (no incluido por
   `spring-boot-starter-webmvc` solo) y se corrigió el import. Commit
   `e49e723`, ya pusheado a `main`.
+- **Endpoint de resumen mensual implementado y probado** (2026-08-09):
+  `GET /api/v1/gastos/resumen?mes=yyyy-MM`. `ResumenService` trae los gastos
+  del mes (`GastoRepository.findByFechaBetween`), suma los montos por
+  categoría **en Java** (no delegado al LLM, para que los totales sean
+  exactos) y le pide a Groq (mismo modelo `llama-3.1-8b-instant`,
+  `temperature: 0.4`) que redacte un resumen ejecutivo breve en español a
+  partir de ese desglose. Si no hay gastos ese mes, responde sin llamar a
+  Groq. Si Groq falla, igual devuelve los totales calculados con un mensaje
+  de fallback. Se extrajo `GroqConfig` como bean compartido de `WebClient`
+  para no duplicar esa configuración entre `CategorizacionService` y
+  `ResumenService`. De paso se corrigió `JsonNode.asText()` → `asString()`
+  (deprecado en Jackson 3, el que usa Spring Boot 4.1). Commit `bb68f9b`,
+  ya pusheado a `main`.
+  - Nota conocida: el texto que redacta Groq a veces incluye porcentajes que
+    no cuadran matemáticamente (los LLMs no son confiables haciendo
+    aritmética). No afecta a `totalGastado` ni `totalPorCategoria`, que se
+    calculan en Java. Si en algún momento importa que el texto no tenga
+    números potencialmente erróneos, ajustar el prompt para que no mencione
+    cifras y dejar que el consumidor combine texto + totales exactos.
+- Con esto, el proyecto llegó a su primera versión "completa" según el
+  objetivo original (CRUD + clasificación automática + resumen mensual).
 
 ## Pendiente / a verificar
-- **Falta construir el endpoint de resumen mensual**: debe juntar los gastos
-  de un mes, pasárselos a Groq (o a otro prompt), y devolver un resumen
-  ejecutivo en lenguaje natural en español (ej: "Este mes gastaste sobre todo
-  en comida y transporte..."). Este es el último feature planeado para
-  considerar el proyecto "completo" en su primera versión.
 - El paquete se llama `com.diego.Clasificador_gastos` (con mayúscula y guión
   bajo) — no sigue la convención estándar de Java (debería ser todo minúsculas
   sin guión bajo). Se dejó así a propósito por ahora, no es prioritario
   renombrarlo.
+- Hay un archivo suelto `tatus` en la raíz del repo (quedó commiteado en
+  `610aeb0`) que parece un artefacto accidental, no un archivo de proyecto
+  real — revisar si se puede borrar.
+- El README todavía no se actualizó para reflejar el resumen mensual ni
+  cómo levantar el proyecto end-to-end (Docker + `.env` + Groq key).
 
 ## Preferencias de Diego para trabajar en este proyecto
 - Prefiere explicaciones detalladas del "por qué", no solo el "qué" — quiere
